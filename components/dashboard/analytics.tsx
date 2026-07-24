@@ -1,72 +1,114 @@
+'use client'
+
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, PieChart, Pie, Cell, Legend, LegendProps,
+} from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { COVERAGE_BY_GRADE, MONTHLY_TREND } from '@/lib/mind-care'
+import {
+  MONTHLY_TREND, DASS21_BREAKDOWN, RISK_BY_GRADE,
+} from '@/lib/mind-care'
+
+const RISK_COLORS = { normal: '#22c55e', needHelp: '#f59e0b', severe: '#ef4444' }
+
+const tooltipStyle = {
+  borderRadius: 12,
+  border: '1px solid hsl(var(--border))',
+  background: 'hsl(var(--card))',
+  color: 'hsl(var(--card-foreground))',
+  fontSize: 12,
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+}
+
+function ChartLegend({ payload }: LegendProps) {
+  if (!payload) return null
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
+      {payload.map((entry, i) => (
+        <span key={i} className="flex items-center gap-1.5">
+          <span className="size-2.5 rounded-sm" style={{ background: entry.color }} />
+          {entry.value}
+        </span>
+      ))}
+    </div>
+  )
+}
 
 export function Analytics() {
   return (
     <section className="grid gap-4 lg:grid-cols-2">
-      <Card>
+      {/* Line chart - 12-month trend */}
+      <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle className="font-heading text-lg">Tỷ lệ bao phủ tham vấn</CardTitle>
-          <p className="text-sm text-muted-foreground">Số học sinh đã khảo sát theo từng khối</p>
+          <CardTitle className="font-heading text-lg">Xu hướng sức khỏe tinh thần 12 tháng</CardTitle>
+          <p className="text-sm text-muted-foreground">Tỷ lệ học sinh theo mức độ rủi ro (%)</p>
         </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          {COVERAGE_BY_GRADE.map((g) => {
-            const pct = Math.round((g.surveyed / g.total) * 100)
-            return (
-              <div key={g.grade} className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-foreground">{g.grade}</span>
-                  <span className="text-muted-foreground">
-                    {g.surveyed}/{g.total}{' '}
-                    <span className="font-semibold text-primary">({pct}%)</span>
-                  </span>
-                </div>
-                <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </div>
-            )
-          })}
+        <CardContent>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={MONTHLY_TREND} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--border))" />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--border))" />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Legend content={<ChartLegend />} />
+                <Line type="monotone" dataKey="normal" name="Bình thường" stroke={RISK_COLORS.normal} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="needHelp" name="Cần tham vấn" stroke={RISK_COLORS.needHelp} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="severe" name="Báo động đỏ" stroke={RISK_COLORS.severe} strokeWidth={2.5} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
+      {/* DASS-21 breakdown */}
       <Card>
         <CardHeader>
-          <CardTitle className="font-heading text-lg">Xu hướng sức khỏe tinh thần</CardTitle>
-          <p className="text-sm text-muted-foreground">Phân bố mức độ theo tháng (%)</p>
+          <CardTitle className="font-heading text-lg">Phân bố DASS-21</CardTitle>
+          <p className="text-sm text-muted-foreground">Điểm trung bình 3 khía cạnh (0-21)</p>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex items-end justify-between gap-2">
-            {MONTHLY_TREND.map((m) => (
-              <div key={m.month} className="flex flex-1 flex-col items-center gap-2">
-                <div className="flex h-40 w-full max-w-10 flex-col justify-end overflow-hidden rounded-md">
-                  <div className="bg-danger" style={{ height: `${m.severe}%` }} />
-                  <div className="bg-warning" style={{ height: `${m.needHelp}%` }} />
-                  <div className="bg-success" style={{ height: `${m.normal}%` }} />
-                </div>
-                <span className="text-xs text-muted-foreground">{m.month}</span>
-              </div>
-            ))}
+        <CardContent>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={DASS21_BREAKDOWN} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="dimension" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--border))" />
+                <YAxis domain={[0, 21]} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--border))" />
+                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }} />
+                <Bar dataKey="value" name="Điểm" radius={[8, 8, 0, 0]} maxBarSize={80}>
+                  {DASS21_BREAKDOWN.map((d, i) => (
+                    <Cell key={i} fill={d.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-          <div className="flex flex-wrap items-center gap-4 border-t border-border pt-3 text-xs">
-            <Legend color="bg-success" label="Bình thường" />
-            <Legend color="bg-warning" label="Cần tham vấn" />
-            <Legend color="bg-danger" label="Báo động đỏ" />
+        </CardContent>
+      </Card>
+
+      {/* Risk by grade */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-heading text-lg">Rủi ro theo khối lớp</CardTitle>
+          <p className="text-sm text-muted-foreground">Số học sinh theo mức độ & khối</p>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={RISK_BY_GRADE} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="grade" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--border))" />
+                <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--border))" />
+                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }} />
+                <Legend content={<ChartLegend />} />
+                <Bar dataKey="normal" name="Bình thường" stackId="a" fill={RISK_COLORS.normal} radius={[0, 0, 0, 0]} maxBarSize={80} />
+                <Bar dataKey="needHelp" name="Cần tham vấn" stackId="a" fill={RISK_COLORS.needHelp} maxBarSize={80} />
+                <Bar dataKey="severe" name="Báo động đỏ" stackId="a" fill={RISK_COLORS.severe} radius={[8, 8, 0, 0]} maxBarSize={80} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
     </section>
-  )
-}
-
-function Legend({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="flex items-center gap-1.5 text-muted-foreground">
-      <span className={`size-2.5 rounded-sm ${color}`} />
-      {label}
-    </span>
   )
 }

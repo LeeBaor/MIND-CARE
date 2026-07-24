@@ -3,6 +3,7 @@ import { StatCards } from '@/components/dashboard/stat-cards'
 import { AlertZone } from '@/components/dashboard/alert-zone'
 import { StudentTable } from '@/components/dashboard/student-table'
 import { Analytics } from '@/components/dashboard/analytics'
+import { AiInsights } from '@/components/dashboard/ai-insights'
 
 export default function DashboardPage() {
   return (
@@ -21,6 +22,7 @@ export default function DashboardPage() {
         <StatCards />
         <AlertZone />
         <Analytics />
+        <AiInsights />
         <StudentTable />
       </main>
     </div>

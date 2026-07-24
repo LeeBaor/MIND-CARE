@@ -186,6 +186,12 @@ export const COVERAGE_BY_GRADE = [
 ]
 
 export const MONTHLY_TREND = [
+  { month: 'T8', normal: 82, needHelp: 13, severe: 5 },
+  { month: 'T9', normal: 79, needHelp: 16, severe: 5 },
+  { month: 'T10', normal: 76, needHelp: 17, severe: 7 },
+  { month: 'T11', normal: 74, needHelp: 18, severe: 8 },
+  { month: 'T12', normal: 77, needHelp: 16, severe: 7 },
+  { month: 'T1', normal: 75, needHelp: 17, severe: 8 },
   { month: 'T2', normal: 78, needHelp: 15, severe: 7 },
   { month: 'T3', normal: 74, needHelp: 18, severe: 8 },
   { month: 'T4', normal: 80, needHelp: 14, severe: 6 },
@@ -193,6 +199,100 @@ export const MONTHLY_TREND = [
   { month: 'T6', normal: 68, needHelp: 22, severe: 10 },
   { month: 'T7', normal: 73, needHelp: 19, severe: 8 },
 ]
+
+// DASS-21 dimension averages across the school (0-21 per subscale)
+export const DASS21_BREAKDOWN = [
+  { dimension: 'Trầm cảm', value: 8.4, color: '#3b82f6' },
+  { dimension: 'Lo âu', value: 10.2, color: '#f59e0b' },
+  { dimension: 'Căng thẳng', value: 9.1, color: '#ef4444' },
+]
+
+// Risk distribution by grade block
+export const RISK_BY_GRADE = [
+  { grade: 'Khối 10', normal: 120, needHelp: 15, severe: 7 },
+  { grade: 'Khối 11', normal: 100, needHelp: 20, severe: 8 },
+  { grade: 'Khối 12', normal: 75, needHelp: 14, severe: 7 },
+]
+
+// SOS queue (real-time mock)
+export interface SosAlert {
+  id: string
+  studentId: string
+  studentName: string
+  grade: string
+  triggeredAt: string
+  status: 'PENDING' | 'HANDLING'
+}
+
+export const SOS_ALERTS: SosAlert[] = [
+  { id: 'sos1', studentId: 's1', studentName: 'Nguyễn Minh An', grade: 'Lớp 10A1', triggeredAt: '2026-07-24T21:14:00', status: 'PENDING' },
+  { id: 'sos2', studentId: 's2', studentName: 'Trần Thảo Vy', grade: 'Lớp 11B2', triggeredAt: '2026-07-24T20:42:00', status: 'HANDLING' },
+]
+
+// AI-generated intervention suggestions
+export interface AiInsight {
+  id: string
+  priority: 'HIGH' | 'MEDIUM' | 'LOW'
+  title: string
+  detail: string
+  affectedStudents: number
+}
+
+export const AI_INSIGHTS: AiInsight[] = [
+  {
+    id: 'ai1',
+    priority: 'HIGH',
+    title: 'Gia tăng lo âu ở khối 12 trước thi học kỳ',
+    detail: 'Điểm lo âu DASS-21 trung bình khối 12 tăng 23% trong 4 tuần qua. Đề xuất tổ chức buổi workshop quản lý căng thẳng thi cử và mở thêm khung giờ tham vấn chiều thứ 7.',
+    affectedStudents: 14,
+  },
+  {
+    id: 'ai2',
+    priority: 'HIGH',
+    title: 'Cụm 7 học sinh lớp 10A1 có dấu hiệu trầm cảm liên quan',
+    detail: 'Phân tích cho thấy 7 học sinh cùng lớp 10A1 có điểm trầm cảm tăng đồng thời. Nên phối hợp GVCN khảo sát môi trường lớp học và kiểm tra tình bạn bạo lực tinh tế.',
+    affectedStudents: 7,
+  },
+  {
+    id: 'ai3',
+    priority: 'MEDIUM',
+    title: 'Học sinh nam có xu hướng giấu kín cảm xúc',
+    detail: 'Tỷ lệ học sinh nam tự đánh giá "không bao giờ" nhưng điểm quan sát từ GVCN cho thấy mâu thuẫn. Khuyến nghị thêm câu hỏi gián tiếp trong khảo sát tới và tổ chức nhóm chia sẻ nam riêng.',
+    affectedStudents: 23,
+  },
+  {
+    id: 'ai4',
+    priority: 'LOW',
+    title: 'Mối tương quan giữa thiếu ngủ và điểm căng thẳng',
+    detail: 'Học sinh ngủ dưới 6 tiếng có điểm căng thẳng DASS-21 cao hơn 40%. Đề xuất chiến dịch "Ngủ đủ giấc" và nhắc nhở qua app vào 22:30.',
+    affectedStudents: 45,
+  },
+]
+
+// DASS-21 per-student dimension scores (mock)
+export interface DassScore {
+  studentId: string
+  depression: number
+  anxiety: number
+  stress: number
+}
+
+export const DASS_SCORES: DassScore[] = [
+  { studentId: 's1', depression: 14, anxiety: 16, stress: 13 },
+  { studentId: 's2', depression: 10, anxiety: 15, stress: 11 },
+  { studentId: 's3', depression: 7, anxiety: 9, stress: 6 },
+  { studentId: 's4', depression: 6, anxiety: 8, stress: 5 },
+  { studentId: 's5', depression: 5, anxiety: 7, stress: 4 },
+  { studentId: 's6', depression: 2, anxiety: 3, stress: 2 },
+  { studentId: 's7', depression: 1, anxiety: 2, stress: 1 },
+  { studentId: 's8', depression: 3, anxiety: 4, stress: 3 },
+  { studentId: 's9', depression: 1, anxiety: 1, stress: 1 },
+  { studentId: 's10', depression: 4, anxiety: 5, stress: 4 },
+]
+
+export function getDassScore(studentId: string) {
+  return DASS_SCORES.find((d) => d.studentId === studentId)
+}
 
 export function getStudent(id: string) {
   return STUDENTS.find((s) => s.id === id)
